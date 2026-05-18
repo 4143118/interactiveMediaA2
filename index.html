@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2-Ingredient Chocolate Soufflé — Cooking Tutorial</title>
+
+    <!--
+        Icons used in this project:
+        - Play icon:       https://img.icons8.com/ios-glyphs/30/play--v1.png     (Icons8)
+        - Pause icon:      https://img.icons8.com/ios-glyphs/30/pause--v1.png    (Icons8)
+        - Rewind icon:     https://img.icons8.com/ios-glyphs/30/rewind--v1.png   (Icons8)
+        - Fast-forward:    https://img.icons8.com/ios-glyphs/30/fast-forward--v1.png (Icons8)
+       https://icons8.com
+    -->
+
+    <!--
+        Fonts loaded here in HTML so they are requested as early as possible.
+        Defined as CSS variables in style.css so they are easy to swap out.
+        - Playfair Display  (headings)   https://fonts.google.com/specimen/Playfair+Display
+        - DM Sans           (body text)  https://fonts.google.com/specimen/DM+Sans
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<!--This media player will include video itself, control buttons, tittle, video description section, steps,-->
+<!--and an ingredient checkbox. I think preparation is the most important step when people cooking, then
+I have the idea of checkbox.-->
+
+<!-- ===================== VIDEO PAGE ===================== -->
+<main class="page" id="video-page">
+    <article class="player-layout">
+
+        <!-- LEFT: VIDEO + CONTROLS -->
+        <section class="media-player">
+
+            <!--
+                Using <figure> to wraps the video and the fullscreen overlay together
+                so that when we go fullscreen, the overlay controls come with it.
+                I knew it from Google AI.
+            -->
+            <figure class="video-wrapper">
+                <video id="custom-video-player">
+                    <source
+                            src="https://archive.org/download/2-ingredient-chocolate-souffle/2-Ingredient%20Chocolate%20Souffle%CC%81.mp4"
+                            type="video/mp4"
+                    />
+                </video>
+
+                <!--
+                    Fullscreen overlay, hidden by default
+                    Contains only the controls needed while fullscreen:
+                    speed, rewind, play/pause, forward.
+                -->
+                <aside class="fullscreen-overlay" id="fullscreen-overlay">
+                    <menu class="fs-controls">
+                        <li>
+                            <button class="fs-btn" id="fs-rewind-btn">
+                                <img src="https://img.icons8.com/ios-glyphs/30/rewind--v1.png" alt="Rewind 15s" width="22" height="22" />
+                            </button>
+                        </li>
+                        <li>
+                            <button class="fs-btn fs-primary" id="fs-play-btn">
+                                <img id="fs-play-img" src="https://img.icons8.com/ios-glyphs/30/play--v1.png" alt="Play" width="26" height="26" />
+                            </button>
+                        </li>
+                        <li>
+                            <button class="fs-btn" id="fs-forward-btn">
+                                <img src="https://img.icons8.com/ios-glyphs/30/fast-forward--v1.png" alt="Forward 15s" width="22" height="22" />
+                            </button>
+                        </li>
+                        <li>
+                            <button class="fs-speed-pill" id="fs-speed-btn">1×</button>
+                        </li>
+                    </menu>
+
+<!--                    I seeked help from Claude to teach me how to add scrubber for video-->
+                    <!-- Scrubber inside the fullscreen overlay -->
+                    <section class="fs-scrubber-section">
+                        <span class="fs-scrubber-wrapper" id="fs-scrubber-wrapper">
+                            <progress class="fs-progress-bar" id="fs-progress-bar" value="0" max="100">
+                                <span id="fs-progress-fill"></span>
+                            </progress>
+                        </span>
+                        <p class="fs-time-display">
+                            <time id="fs-current-time">0:00</time>
+                            <time id="fs-total-duration">0:00</time>
+                        </p>
+                    </section>
+                </aside>
+            </figure>
+
+            <!-- SCRUBBER + CONTROLS (normal) -->
+            <section class="custom-controls">
+
+                <section class="scrubber-section">
+                    <span class="scrubber-wrapper" id="scrubber-wrapper">
+                        <progress class="progress-bar" id="progress-bar" value="0" max="100">
+                            <span id="progress-bar-fill"></span>
+                        </progress>
+                    </span>
+                    <p class="time-display">
+                        <time id="current-time">0:00</time>
+                        <time id="total-duration">0:00</time>
+                    </p>
+                </section>
+
+                <section class="controls-row">
+                    <menu class="controls-left">
+                        <li>
+                            <button class="speed-pill" id="speed-btn">1×</button>
+                        </li>
+                    </menu>
+
+                    <menu class="controls-centre">
+                        <li>
+                            <button class="ctrl-btn" id="rewind-btn">
+                                <img src="https://img.icons8.com/ios-glyphs/30/rewind--v1.png" alt="Rewind 15s" width="20" height="20" />
+                            </button>
+                        </li>
+                        <li>
+                            <button class="ctrl-btn primary-btn" id="play-pause-btn">
+                                <img id="play-pause-img" src="https://img.icons8.com/ios-glyphs/30/play--v1.png" alt="Play" width="22" height="22" />
+                            </button>
+                        </li>
+                        <li>
+                            <button class="ctrl-btn" id="forward-btn">
+                                <img src="https://img.icons8.com/ios-glyphs/30/fast-forward--v1.png" alt="Forward 15s" width="20" height="20" />
+                            </button>
+                        </li>
+                    </menu>
+<!--                   Icons From Unicode-->
+                    <menu class="controls-right">
+                        <li>
+                            <button class="ctrl-btn like-btn" id="like-btn">
+                                ♡ <span id="like-count">142</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="ctrl-btn" id="fullscreen-btn">
+                                ⛶</button>
+                        </li>
+                    </menu>
+                </section>
+
+            </section>
+
+            <!-- Recipe description below controls -->
+            <section class="recipe-desc">
+                <h1 class="recipe-title">2-Ingredient Chocolate Soufflé</h1>
+                <p class="recipe-subtitle">
+                    Just dark chocolate and eggs — no flour, no butter, no fuss.
+                    Light, airy, and deeply chocolatey. Ready in under 20 minutes.
+                </p>
+            </section>
+
+        </section>
+
+        <!-- RIGHT: RECIPE PANEL -->
+        <aside class="recipe-panel">
+
+            <nav class="tab-bar">
+                <button class="tab-btn active" id="tab-steps">
+                    Steps <span class="tab-count" id="step-count">(1/5)</span>
+                </button>
+                <button class="tab-btn" id="tab-ingr">
+                    Ingredients <span class="tab-count" id="ingr-count">(0/2)</span>
+                </button>
+            </nav>
+
+            <section class="panel" id="panel-steps">
+                <!-- <ol> injected by JS -->
+            </section>
+
+            <section class="panel" id="panel-ingr" style="display:none">
+<!--                give an instruction-->
+                <p class="ingr-hint">Tap to mark as prepped</p>
+                <!-- <ul> injected by JS -->
+            </section>
+
+        </aside>
+
+    </article>
+</main>
+
+
+
+<footer>
+    <p>&copy; 2026 Cooking Tutorial. Icons by <a href="https://icons8.com">Icons8</a>.</p>
+    <p>video by <a href="https://tasty.co/recipe/2-ingredient-chocolate-souffle?utm_source=Pinterest&utm_medium=organic">Tasty</a>.</p>
+</footer>
+
+</body>
+</html>

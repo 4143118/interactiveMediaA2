@@ -1,0 +1,706 @@
+/* ---------- GOOGLE FONTS ----------
+   Loaded via <link> in HTML for early network request.
+   Defined here as variables so changing the font only needs
+   one edit in this file.
+
+   Playfair Display — https://fonts.google.com/specimen/Playfair+Display
+   DM Sans          — https://fonts.google.com/specimen/DM+Sans
+
+   COLOUR PALETTE
+   For me, Cooking carries a sense of safety and belonging.
+   I wanted the interface to reflect that feeling of home
+   rather than look like a cold, clinical tech product.
+   Every colour here is a warm tone.
+
+   Colours are numbered so they are easy to cross-reference and swap
+   without needing to remember descriptive names.
+
+   LAYOUT APPROACH
+   The page uses flexbox throughout. The two-column player layout
+   (video left, recipe panel right) is a flex row.
+   Each column is itself a flex column.
+   The controls row uses a three-group flex
+   layout (left / centre / right) so the play button could stays truly
+   centred below the video.
+   ===================================================================== */
+
+/* ---------- DESIGN KIT ---------- */
+:root {
+    /* Colours — see palette notes above */
+    --color-1:   #FAF7F2;   /* page background      */
+    --color-2:   #F0EAE0;   /* hover fills             */
+    --color-3:   #9e323f;   /*  primary accent            */
+    --color-4:   #F5E6DC;   /*  active bg      */
+    --color-5:   #8f1a16;     /*  pressed/hover states */
+    --color-6:   #2A2420;   /*  headings & video bg  */
+    --color-7:   #7A6E68;   /*  secondary text         */
+    --color-8:   #E0D8CF;   /*  borders              */
+    --color-9:   #FFFFFF;   /* text on dark backgrounds  */
+
+    /* Fonts Family */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body:    'DM Sans', Arial, sans-serif;
+
+    /* Border radii */
+    --radius-sm:    6px;
+    --radius-md:    10px;
+    --radius-lg:    14px;
+}
+
+/* ---------- BASE ----------
+   body is a flex column so the footer always sticks to the bottom
+*/
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-1);
+    color: var(--color-6);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ---------- PAGE CONTAINER ----------
+   Constrains content to a readable max-width and centres it.
+*/
+.page {
+    max-width: 1300px;
+    width: 100%;
+    padding: 28px 24px;
+    flex: 1;
+}
+
+/* ---------- TWO-COLUMN PLAYER LAYOUT ----------*/
+.player-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+/* ---------- VIDEO PLAYER COLUMN ----------*/
+.media-player {
+    flex: 1.4;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ---------- VIDEO WRAPPER ----------
+   position: relative gives context for the fullscreen overlay,
+   which is positioned absolute inside this figure.
+   aspect-ratio: 16/9 keeps the video the correct shape at any width.
+*/
+.video-wrapper {
+    position: relative;
+    background: var(--color-6);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* ---------- FULLSCREEN OVERLAY ----------
+   When the browser enters fullscreen, JS adds .is-fullscreen to <body>, which triggers
+   display: flex here via the rule below.
+   A gradient fades from transparent at the top to dark at the bottom
+   so the controls are readable over any video content.
+   I asked Claude to help me fix the problem of showing controls when in fullscreen.
+*/
+.fullscreen-overlay {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px 14px;
+    background: linear-gradient(transparent, rgba(20, 12, 8, 0.75));
+}
+
+body.is-fullscreen .fullscreen-overlay {
+    display: flex;
+}
+
+/* Fullscreen controls*/
+.fs-controls {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.fs-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition: background 0.15s;
+}
+
+.fs-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* Icons are black by default, invert makes them white on the dark overlay */
+.fs-btn img {
+    filter: invert(1);
+}
+
+/* Play button is larger and filled with the accent colour */
+.fs-primary {
+    width: 50px;
+    height: 50px;
+    background: var(--color-3);
+}
+
+.fs-primary:hover {
+    background: var(--color-5);
+}
+
+/* Speed pill inside the fullscreen overlay */
+.fs-speed-pill {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: var(--color-9);
+    font: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    transition: background 0.15s;
+}
+
+.fs-speed-pill:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* Fullscreen scrubber */
+.fs-scrubber-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Wrapper is taller than the bar itself, creates a larger drag target */
+.fs-scrubber-wrapper {
+    position: relative;
+    height: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.fs-progress-bar {
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
+    height: 4px;
+    border: none;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    transition: height 0.15s;
+}
+
+/* Bar grows on hover/drag — visual feedback that it is interactive */
+.fs-scrubber-wrapper.dragging .fs-progress-bar,
+.fs-scrubber-wrapper:hover .fs-progress-bar {
+    height: 7px;
+}
+
+.fs-progress-bar::-webkit-progress-bar   { background: rgba(255, 255, 255, 0.3); border-radius: 2px; }
+.fs-progress-bar::-webkit-progress-value { background: var(--color-3);           border-radius: 2px; }
+.fs-progress-bar::-moz-progress-bar      { background: var(--color-3);           border-radius: 2px; }
+
+.fs-time-display {
+    display: flex;
+    justify-content: space-between;
+    font: var(--font-body);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- NORMAL CONTROLS ---------- */
+.custom-controls {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ---------- SCRUBBER (normal view) ----------
+   The wrapper is taller than the <progress> bar so there is a
+   generous click/drag target. The bar itself grows on hover and
+   while dragging to give the user real-time visual feedback.
+   Just like I said in HTML, I asked help from Claude for scrubber things.
+*/
+.scrubber-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.scrubber-wrapper {
+    position: relative;
+    height: 14px;
+    display: flex;
+    align-items: center;
+}
+
+progress.progress-bar {
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
+    height: 4px;
+    border: none;
+    border-radius: 2px;
+    background: var(--color-2);
+    transition: height 0.15s;
+}
+
+.scrubber-wrapper.dragging progress.progress-bar,
+.scrubber-wrapper:hover progress.progress-bar {
+    height: 7px;
+}
+
+progress.progress-bar::-webkit-progress-bar   { background: var(--color-2); border-radius: 2px; }
+progress.progress-bar::-webkit-progress-value { background: var(--color-3); border-radius: 2px; }
+progress.progress-bar::-moz-progress-bar      { background: var(--color-3); border-radius: 2px; }
+
+/* Time display */
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-family: var(--font-body);
+    color: var(--color-7);
+    padding: 0 2px;
+}
+
+/* ---------- CONTROLS ROW ----------*/
+.controls-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.controls-left,
+.controls-centre,
+.controls-right {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.controls-centre {
+    gap: 6px;
+}
+
+.controls-left,
+.controls-right {
+    flex: 1;
+}
+
+.controls-right {
+    justify-content: flex-end;
+}
+
+/* ---------- CONTROL BUTTONS ----------
+   All buttons share a base style with generous padding for easy tapping.
+   Icons start at 60% opacity and reach full opacity on hover —
+   a subtle cue that they are interactive without being distracting.
+*/
+.ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--color-7);
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    transition: background 0.12s, color 0.12s;
+    min-height: 36px;
+}
+
+.ctrl-btn:hover {
+    background: var(--color-2);
+    color: var(--color-6);
+}
+
+.ctrl-btn:active {
+    transform: scale(0.95);
+}
+
+.ctrl-btn img {
+    opacity: 0.6;
+    transition: opacity 0.12s;
+}
+
+.ctrl-btn:hover img {
+    opacity: 1;
+}
+
+/* Play/pause, the primary action, styled as a filled circle.
+   Dark background makes it stand out from the other buttons.
+   On hover it shifts to the dark accent.
+*/
+.primary-btn {
+    background: var(--color-6);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+}
+
+.primary-btn:hover {
+    background: var(--color-5);
+}
+
+/* Icons inside the dark play button need to be white */
+.primary-btn img {
+    filter: invert(1);
+    opacity: 1;
+}
+
+/* Speed pill
+   Inverts to dark on hover to signal it is clickable.
+*/
+.speed-pill {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    background: var(--color-2);
+    border: 1px solid var(--color-8);
+    border-radius: 4px;
+    padding: 4px 9px;
+    color: var(--color-7);
+    transition: background 0.12s, color 0.12s;
+}
+
+.speed-pill:hover {
+    background: var(--color-6);
+    color: var(--color-9);
+    border-color: var(--color-6);
+}
+
+/* Like button, outlined by default, fills with the light terracotta
+   tint and switches to the accent colour when liked.
+*/
+.like-btn {
+    border: 1px solid var(--color-8);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 13px;
+    gap: 6px;
+    color: var(--color-7);
+}
+
+.like-btn.liked {
+    color: var(--color-3);
+    border-color: var(--color-3);
+    background: var(--color-4);
+}
+
+/* ---------- RECIPE DESCRIPTION ----------
+   Sits below the controls, separated by a border.
+   The serif heading and muted subtitle create a typographic hierarchy
+   that feels editorial.
+*/
+.recipe-desc {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-8);
+}
+
+.recipe-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-6);
+    margin-bottom: 5px;
+}
+
+.recipe-subtitle {
+    font-size: 13px;
+    color: var(--color-7);
+    line-height: 1.6;
+}
+
+/* ---------- RECIPE PANEL (right sidebar) ----------
+   position: sticky keeps the panel in view as the user scrolls.
+   max-height: 90vh with overflow-y: auto on .panel lets the step
+   list scroll independently without the whole page scrolling.
+*/
+.recipe-panel {
+    flex: 1;
+    min-width: 240px;
+    background: var(--color-9);
+    border: 1px solid var(--color-8);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: sticky;
+    top: 20px;
+    max-height: 90vh;
+}
+
+/* ---------- TABS ----------*/
+.tab-bar {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--color-8);
+    flex-shrink: 0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 11px 0;
+    font-size: 13px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-align: center;
+    color: var(--color-7);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.12s, border-color 0.12s;
+}
+
+.tab-btn:hover  { color: var(--color-6); }
+.tab-btn.active { color: var(--color-3); border-bottom-color: var(--color-3); }
+
+.tab-count {
+    font-size: 11px;
+    font-family: var(--font-body);
+    color: var(--color-7);
+    font-weight: 400;
+}
+
+/* ---------- PANEL CONTENT ---------- */
+.panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* ---------- STEP LIST ----------
+   Steps are connected by a vertical line (the timeline) to
+   communicate that they are sequential. The active step gets
+   a filled terracotta dot and a warm tinted background so the
+   user can see at a glance where the video currently is.
+*/
+ol.step-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li.step-item {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 2px;
+}
+
+li.step-item:hover .step-body { background: var(--color-1); }
+
+li.step-item .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30px;
+    flex-shrink: 0;
+}
+
+li.step-item .step-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-2);
+    border: 1px solid var(--color-8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--color-7);
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+li.step-item.active .step-dot {
+    background: var(--color-3);
+    border-color: var(--color-3);
+    color: var(--color-9);
+}
+
+li.step-item .step-line {
+    width: 1.5px;
+    background: var(--color-8);
+    flex: 1;
+    min-height: 18px;
+    margin: 3px 0;
+    display: block;
+}
+
+li.step-item.active .step-line     { background: var(--color-4); }
+li.step-item:last-child .step-line { display: none; }
+
+li.step-item .step-body {
+    flex: 1;
+    padding: 5px 8px;
+    border-radius: var(--radius-md);
+    margin-bottom: 2px;
+    transition: background 0.12s;
+    display: flex;
+    flex-direction: column;
+}
+
+li.step-item.active .step-body  { background: var(--color-4); }
+li.step-item.active .step-title { color: var(--color-5); }
+li.step-item.active .step-time  { color: var(--color-3); }
+
+li.step-item .step-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-6);
+    line-height: 1.3;
+    margin: 0;
+}
+
+li.step-item .step-time {
+    font-size: 11px;
+    font-family: var(--font-body);
+    color: var(--color-7);
+    margin-top: 2px;
+    display: block;
+}
+
+/* ---------- INGREDIENT LIST ----------
+   Using coloured dot to achieve checkbox feature. It is faster to
+   tap and visually cleaner. The dot fills with the accent colour
+   when an ingredient is marked as prepped.
+*/
+ul.ingr-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ingr-hint {
+    font-size: 11px;
+    color: var(--color-7);
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+li.ingr-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--color-8);
+    cursor: pointer;
+    transition: background 0.1s;
+    border-radius: var(--radius-sm);
+}
+
+li.ingr-item:last-of-type { border-bottom: none; }
+li.ingr-item:hover         { background: var(--color-1); }
+
+li.ingr-item .ingr-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-8);
+    flex-shrink: 0;
+    display: inline-block;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+li.ingr-item.done .ingr-dot {
+    background: var(--color-3);
+    border-color: var(--color-3);
+}
+
+li.ingr-item .ingr-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-6);
+    transition: color 0.15s;
+}
+
+li.ingr-item.done .ingr-name {
+    color: var(--color-7);
+    text-decoration: line-through;
+}
+
+li.ingr-item .ingr-qty {
+    font-size: 12px;
+    font-family: var(--font-body);
+    color: var(--color-7);
+}
+
+.ingr-reset {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 11px;
+    color: var(--color-7);
+    text-decoration: underline;
+    margin: 8px 4px 0;
+    font-family: var(--font-body);
+}
+
+.ingr-reset:hover { color: var(--color-6); }
+
+/* ---------- FOOTER ---------- */
+footer {
+    width: 100%;
+    background: var(--color-6);
+    color: var(--color-7);
+    text-align: center;
+    padding: 14px 0;
+    font-size: 12px;
+    margin-top: auto;
+    font-family: var(--font-body);
+}
+
+footer a {
+    color: var(--color-7);
+    text-decoration: underline;
+}
+
+footer a:hover { color: var(--color-9); }
